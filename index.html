@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>News Studio</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Noto+Sans+Devanagari:wght@400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo"><span>▪</span> NEWS STUDIO</div>
+  <div class="tsep"></div>
+  <div class="tsub">Social Media</div>
+  <div class="topbar-right">
+    <div class="mode-tabs">
+      <button class="mode-tab active" onclick="setMode('post',this)">📸 Post</button>
+      <button class="mode-tab" onclick="setMode('reel',this)">🎬 Reel</button>
+    </div>
+    <button class="preview-btn" onclick="openPreview()">⛶ Preview</button>
+  </div>
+</div>
+
+<div class="studio">
+
+<div class="sidebar">
+
+  <div class="sec">
+    <div class="sec-header">
+      <span class="sl">Category</span>
+      <div class="tog" onclick="toggleSection('cat-body','tog-cat')">
+        <div class="tog-track on" id="tog-cat"></div>
+        <span class="tog-label">On</span>
+      </div>
+    </div>
+    <div class="sec-body" id="cat-body">
+      <div class="chip-grid">
+        <button class="chip active" onclick="setCat('BREAKING','NEWS',this,'#e0001b')">🔴 Breaking</button>
+        <button class="chip" onclick="setCat('POLITICS','UPDATE',this,'#1565c0')">🏛 Politics</button>
+        <button class="chip" onclick="setCat('TECHNOLOGY','NEWS',this,'#00796b')">💻 Tech</button>
+        <button class="chip" onclick="setCat('SPORTS','UPDATE',this,'#2e7d32')">⚽ Sports</button>
+        <button class="chip" onclick="setCat('NOTICE','BOARD',this,'#e65100')">📌 Notice</button>
+        <button class="chip" onclick="setCat('EXAM','RESULT',this,'#6a1b9a')">📋 Result</button>
+        <button class="chip" onclick="setCat('CONDOLENCE','',this,'#252525')">🕯 Sad News</button>
+        <button class="chip" onclick="setCat('INTERNATIONAL','NEWS',this,'#880e4f')">🌐 Intl</button>
+        <button class="chip" onclick="setCat('BIRTHDAY','WISHES',this,'#c2185b')">🎂 Birthday</button>
+        <button class="chip" onclick="setCat('CONGRATULATIONS','',this,'#e65100')">🎉 Congrats</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-header">
+      <span class="sl">Language</span>
+    </div>
+    <div class="lang-row">
+      <button class="ltab active" onclick="setLang('en',this)">English</button>
+      <button class="ltab" onclick="setLang('np',this)">नेपाली</button>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-header">
+      <span class="sl">Content</span>
+    </div>
+
+    <div class="field">
+      <label>Brand Logo (Optional)</label>
+      <div class="upload-btn" id="logo-upload-btn" style="padding:8px;">
+        <input type="file" accept="image/*" onchange="handleLogoUpload(event)" id="logo-inp">
+        <div class="upload-icon" style="font-size:14px;">🖼️</div>
+        <span>Upload Custom Logo</span>
+      </div>
+      <div class="photo-preview" id="logo-preview">
+        <div class="photo-frame" style="height:50px; width:50px; background:#111;">
+          <img id="logo-thumb" src="" style="width:100%; height:100%; object-fit:contain;">
+          <div class="photo-remove" onclick="removeLogo()">✕</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Channel / Brand Name</label>
+      <input type="text" id="i-name" placeholder="Your college or media name…" oninput="sync()">
+    </div>
+    <div class="field">
+      <label>Headline</label>
+      <textarea id="i-hl" placeholder="Write your headline here…" oninput="sync()"></textarea>
+    </div>
+    <div class="field">
+      <label>Sub-line / Source</label>
+      <input type="text" id="i-sub" placeholder="Source, department…" oninput="sync()">
+    </div>
+    <div class="field">
+      <label>Website / Handle</label>
+      <input type="text" id="i-web" placeholder="yoursite.com or @handle" oninput="sync()">
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-header">
+      <span class="sl">Ticker Bar</span>
+      <div class="tog" onclick="toggleSection('ticker-body','tog-ticker')">
+        <div class="tog-track on" id="tog-ticker"></div>
+        <span class="tog-label">On</span>
+      </div>
+    </div>
+    <div class="sec-body" id="ticker-body">
+      <div class="field" style="margin-bottom:0">
+        <label>Ticker Text</label>
+        <input type="text" id="i-tick" placeholder="Scrolling ticker message…" oninput="sync()">
+      </div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-header">
+      <span class="sl">Date / Time</span>
+      <div class="tog" onclick="toggleSection('dt-body','tog-dt')">
+        <div class="tog-track on" id="tog-dt"></div>
+        <span class="tog-label">On</span>
+      </div>
+    </div>
+    <div class="sec-body" id="dt-body">
+      <div style="font-size:10px;color:var(--muted);letter-spacing:.5px">Live clock shown on card</div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-header">
+      <span class="sl">Live Badge</span>
+      <div class="tog" onclick="toggleSection('live-body','tog-live')">
+        <div class="tog-track on" id="tog-live"></div>
+        <span class="tog-label">On</span>
+      </div>
+    </div>
+    <div class="sec-body" id="live-body">
+      <div class="field" style="margin-bottom:0">
+        <label>Badge Text</label>
+        <input type="text" id="i-livebadge" value="● LIVE" oninput="sync()">
+      </div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-header">
+      <span class="sl">Watermark Text</span>
+      <div class="tog" onclick="toggleSection('pw-body','tog-pw')">
+        <div class="tog-track on" id="tog-pw"></div>
+        <span class="tog-label">On</span>
+      </div>
+    </div>
+    <div class="sec-body" id="pw-body">
+      <div class="field" style="margin-bottom:0">
+        <label>Text</label>
+        <input type="text" id="i-powered" value="Powered By John" oninput="sync()">
+      </div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-header">
+      <span class="sl">Person / Guest</span>
+      <div class="tog" onclick="toggleSection('guest-body','tog-guest')">
+        <div class="tog-track on" id="tog-guest"></div>
+        <span class="tog-label">On</span>
+      </div>
+    </div>
+    <div class="sec-body" id="guest-body">
+      <div class="upload-btn" id="guest-upload-btn">
+        <input type="file" accept="image/*" onchange="loadGuest(event)" id="guest-inp">
+        <div class="upload-icon">👤</div>
+        <span>Upload person photo</span>
+      </div>
+      <div class="photo-preview" id="guest-preview">
+        <div class="photo-frame" id="guest-frame">
+          <img id="guest-thumb" src="" alt="" draggable="false">
+          <div class="photo-remove" onclick="removeGuest()">✕</div>
+        </div>
+      </div>
+      <div class="field" style="margin-top:8px">
+        <label>Name</label>
+        <input type="text" id="i-gname" placeholder="Full name" oninput="sync()">
+      </div>
+      <div class="field">
+        <label>Title / Role</label>
+        <input type="text" id="i-gtitle" placeholder="Position or role" oninput="sync()">
+      </div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-header"><span class="sl">Background</span></div>
+    
+    <div class="upload-btn" id="bg-upload-btn" style="margin-bottom:10px">
+      <input type="file" accept="video/*,image/*" onchange="handleBgUpload(event)" id="bg-inp">
+      <div class="upload-icon">🎬</div>
+      <span>Upload video or image</span>
+    </div>
+    
+    <div class="photo-preview" id="bg-preview" style="margin-bottom:10px;">
+      <div class="photo-frame" style="height:90px; width:100%;">
+        <img id="bg-thumb-img" src="" style="display:none; width:100%; height:100%; object-fit:cover;">
+        <video id="bg-thumb-vid" src="" style="display:none; width:100%; height:100%; object-fit:cover;" muted loop></video>
+        <div class="photo-remove" onclick="removeBg()">✕</div>
+      </div>
+    </div>
+
+    <div id="vid-controls" style="display:none">
+      <div class="vol-row">
+        <span class="vol-icon" onclick="toggleMute()">🔊</span>
+        <input type="range" class="vol-slider" id="vol-slider" min="0" max="100" value="80" oninput="setVol(this.value)">
+        <span class="vol-val" id="vol-val">80%</span>
+      </div>
+      <div style="display:flex;gap:6px;margin-top:8px">
+        <button class="btn-main btn-dark" style="font-size:10px;padding:7px" onclick="toggleVidPlay()">⏸ Pause/Play</button>
+      </div>
+    </div>
+
+    <div class="sl" style="margin-top:10px;margin-bottom:8px">Card Color</div>
+    <div class="sw-row">
+      <div class="sw active" style="background:#05050f" onclick="setBgCol('#05050f',this)"></div>
+      <div class="sw" style="background:#0d0d0d" onclick="setBgCol('#0d0d0d',this)"></div>
+      <div class="sw" style="background:#060d1a" onclick="setBgCol('#060d1a',this)"></div>
+      <div class="sw" style="background:#100008" onclick="setBgCol('#100008',this)"></div>
+      <div class="sw" style="background:#001410" onclick="setBgCol('#001410',this)"></div>
+      <div class="sw" style="background:#1a1000" onclick="setBgCol('#1a1000',this)"></div>
+      <div class="sw" style="background:#f0f0f0" onclick="setBgCol('#f0f0f0',this)"></div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-header"><span class="sl">Card Elements</span></div>
+    <div style="display:flex;flex-direction:column;gap:7px">
+      <div class="tog" onclick="toggleEl('brand','tog-el-brand')">
+        <div class="tog-track on" id="tog-el-brand"></div>
+        <span class="tog-label">Brand Bar (top)</span>
+      </div>
+      <div class="tog" onclick="toggleEl('lt','tog-el-lt')">
+        <div class="tog-track on" id="tog-el-lt"></div>
+        <span class="tog-label">Lower Third</span>
+      </div>
+      <div class="tog" onclick="toggleEl('footer','tog-el-footer')">
+        <div class="tog-track on" id="tog-el-footer"></div>
+        <span class="tog-label">Footer Strip</span>
+      </div>
+      <div class="tog" onclick="toggleEl('flare','tog-el-flare')">
+        <div class="tog-track" id="tog-el-flare"></div>
+        <span class="tog-label">Light Flare</span>
+      </div>
+      <div class="tog" onclick="toggleEl('grain','tog-el-grain')">
+        <div class="tog-track on" id="tog-el-grain"></div>
+        <span class="tog-label">Film Grain</span>
+      </div>
+      <div class="tog" onclick="toggleEl('cin','tog-el-cin')">
+        <div class="tog-track on" id="tog-el-cin"></div>
+        <span class="tog-label">Cinematic Overlay</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec" id="anim-sec">
+    <div class="sec-header"><span class="sl">Headline Animation</span></div>
+    <div class="anim-grid">
+      <button class="ac active" onclick="setAnim('slide',this)">↑ Slide</button>
+      <button class="ac" onclick="setAnim('fade',this)">◎ Fade</button>
+      <button class="ac" onclick="setAnim('blur',this)">⋯ Blur</button>
+      <button class="ac" onclick="setAnim('scale',this)">⊕ Scale</button>
+      <button class="ac" onclick="setAnim('split',this)">⊢ Split</button>
+      <button class="ac" onclick="setAnim('glitch',this)">⚡ Glitch</button>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button class="btn-main btn-cyan" id="btn-play" onclick="playAnim()" style="display:none">▶  PLAY ANIMATION</button>
+    <button class="btn-main btn-red" onclick="downloadCard()">⬇  DOWNLOAD</button>
+    <button class="btn-main btn-dark" onclick="shareCard()">↗  SHARE</button>
+  </div>
+
+</div>
+<div class="viewport">
+  <div class="vp-inner" id="vp-inner">
+    <div id="card">
+      <canvas id="cvs-bg"></canvas>
+      <video id="bg-vid" loop playsinline muted autoplay></video>
+      <img id="bg-img-el" src="" alt="">
+      <div class="cin" id="el-cin"></div>
+      <div class="grain" id="el-grain"></div>
+      <div class="c-flare" id="el-flare" style="display:none"></div>
+
+      <div class="c-brand" id="el-brand">
+        <div class="c-badge-box" id="el-badge">
+          <div class="bt" id="el-logo-txt">NEWS</div>
+          <div class="bb" id="el-logo-sub">studio</div>
+          <img id="el-logo-img" src="" style="display:none; width:100%; height:100%; object-fit:contain; z-index:2; position:relative;">
+        </div>
+        <div class="c-cname">
+          <span id="el-cname">Your Channel</span>
+          <small>Official Media</small>
+        </div>
+        <div class="c-live" id="el-live">● LIVE</div>
+      </div>
+
+      <div class="c-dt" id="el-dt" style="top:58px">
+        <div class="t" id="el-clock">--:--:--</div>
+        <div class="d" id="el-date"></div>
+      </div>
+
+      <div class="c-cattag" id="el-cattag" style="bottom:270px">
+        <div class="cbar" id="el-cbar"></div>
+        <div class="cmain" id="el-ccat">BREAKING</div>
+        <div class="csub" id="el-ccatsub">NEWS</div>
+      </div>
+
+      <div class="c-guest" id="el-guest" style="right:14px;bottom:275px">
+        <div class="c-gframe" id="el-gframe" style="width:100px;height:118px">
+          <img id="el-gimg" src="" alt="" style="width:100%;height:100%;object-fit:cover;object-position:center top">
+        </div>
+        <div class="c-gplate" id="el-gplate">
+          <div class="c-gname-el" id="el-gname">—</div>
+          <div class="c-gtitle-el" id="el-gtitle">—</div>
+        </div>
+      </div>
+
+      <div class="c-lower" id="el-lower" style="bottom:64px">
+        <div class="c-lt-bar" id="el-ltbar">
+          <div class="c-hl-wrap">
+            <div class="c-hl" id="el-hl">Your headline will appear here</div>
+          </div>
+          <div class="c-sub-wrap">
+            <div class="c-sub" id="el-sub">Source</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="c-ticker" id="el-ticker" style="bottom:34px">
+        <div class="t-flag" id="el-tflag">Update</div>
+        <div class="t-body">
+          <div class="t-inner">
+            <span id="t1">Scrolling ticker • Stay tuned</span>
+            <span id="t2">Scrolling ticker • Stay tuned</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="c-footer" id="el-footer">
+        <div class="f-src" id="el-src">Channel</div>
+        <div class="f-dot"></div>
+        <div class="f-web" id="el-web">yoursite.com</div>
+        <div class="f-wm" id="el-wm">Powered By John</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><div class="fs-modal" id="crop-modal" style="z-index:10000; padding:20px;">
+  <div style="background:#141414; border:1px solid var(--border); border-radius:4px; width:100%; max-width:400px; display:flex; flex-direction:column; gap:12px; padding:16px;">
+    <div style="font-family:'Space Mono', monospace; font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:1px;">Crop Image</div>
+    <div style="width:100%; height:300px; background:#000; overflow:hidden; position:relative;">
+      <img id="crop-image" src="" style="max-width:100%; display:block;">
+    </div>
+    <div style="display:flex; gap:8px; justify-content:flex-end; margin-top:8px;">
+      <button class="btn-main btn-dark" style="width:auto; padding:9px 16px;" onclick="closeCropper()">CANCEL</button>
+      <button class="btn-main btn-red" style="width:auto; padding:9px 16px;" onclick="applyCrop()">CROP & APPLY</button>
+    </div>
+  </div>
+</div>
+
+<div class="fs-modal" id="fs-modal">
+  <button class="fs-close" onclick="closePreview()">✕ Close</button>
+  <div class="fs-card-wrap" id="fs-card-wrap"></div>
+  <div class="fs-label">Press ESC to close</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="script.js"></script>
+</body>
+</html>
